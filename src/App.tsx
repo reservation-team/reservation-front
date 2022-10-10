@@ -6,22 +6,18 @@ import { LoginPage } from './pages/login'
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <LoginPage />,
+    element: <DashboardPage />,
     errorElement: <ErrorPage />,
   },
   {
     path: '/login',
     element: <LoginPage />,
   },
-  {
-    path: '/dashboard',
-    element: <DashboardPage />,
-  },
 ])
 
 export const App = () => {
   return (
-    <div className="App">
+    <div className="App w-full min-h-screen bg-gray-50">
       <RouterProvider router={router} />
     </div>
   )
