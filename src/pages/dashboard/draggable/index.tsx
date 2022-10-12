@@ -11,7 +11,6 @@ export enum Axis {
 
 function snapToGrid(args: any) {
   const { transform } = args
-  console.log('x', Math.ceil(transform.x / 44) * 44, 'y', Math.ceil(transform.y / 44) * 44)
   return {
     ...transform,
     x: Math.ceil(transform.x / 44) * 44,
