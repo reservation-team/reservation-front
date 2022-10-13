@@ -1,48 +1,86 @@
+import { addDays, eachHourOfInterval, setHours } from 'date-fns'
+import { format, setMinutes, setSeconds } from 'date-fns/esm'
+import { Fragment } from 'react'
 import { Draggable } from './draggable'
 
-const workHours = { since: '11:00', till: '2:00' }
+const WORK_HOURS = { since: '11:00', till: '2:00' }
+const day = setMinutes(setSeconds(new Date(), 0), 0)
+const getWorkHours = (workHours: { since: string; till: string }) => {
+  const sinceHour = Number(workHours.since.split(':')[0])
+  const tillHour = Number(workHours.till.split(':')[0])
 
-const formatHour = (hour: number) => (hour > 10 ? hour + ':00' : '0' + hour + ':00')
-
-const getHours = (hours: { since: string; till: string }) => {
-  const since = Number(hours.since.split(':')[0])
-  const till = Number(hours.till.split(':')[0])
-  let workHours = []
-  if (till < since) {
-    for (let i = since; i <= 23; i++) {
-      workHours.push(i)
-    }
-    for (let i = 0; i <= till; i++) {
-      workHours.push(i)
-    }
-    return workHours
+  const since = setHours(day, sinceHour)
+  if (sinceHour > tillHour) {
+    const till = setHours(addDays(day, 1), tillHour)
+    return { since, till }
   }
-  for (let i = since; i <= till; i++) {
-    workHours.push(i)
-  }
-  return workHours
+  const till = setHours(day, tillHour)
+  return { since, till }
 }
 
-const tables = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+const tables = [
+  {
+    id: 1,
+    name: '1',
+    seats: { min: 1, max: 2 },
+    reservations: [
+      { id: 1, time: { since: setMinutes(setHours(day, 11), 0), till: setMinutes(setHours(day, 12), 30) }, data: {} },
+      { id: 2, time: { since: setMinutes(setHours(day, 13), 0), till: setMinutes(setHours(day, 15), 0) }, data: {} },
+    ],
+  },
+  {
+    id: 2,
+    name: '2',
+    seats: { min: 1, max: 2 },
+    reservations: [],
+  },
+  {
+    id: 3,
+    name: '3',
+    seats: { min: 3, max: 4 },
+    reservations: [
+      { id: 3, time: { since: setMinutes(setHours(day, 11), 0), till: setMinutes(setHours(day, 12), 0) }, data: {} },
+      { id: 4, time: { since: setMinutes(setHours(day, 13), 0), till: setMinutes(setHours(day, 15), 0) }, data: {} },
+    ],
+  },
+  {
+    id: 4,
+    name: '4',
+    seats: { min: 3, max: 4 },
+    reservations: [
+      { id: 5, time: { since: setMinutes(setHours(day, 12), 0), till: setMinutes(setHours(day, 13), 0) }, data: {} },
+      { id: 6, time: { since: setMinutes(setHours(day, 14), 15), till: setMinutes(setHours(day, 15), 30) }, data: {} },
+    ],
+  },
+]
 
 export const DashboardPage = () => {
-  const hours = getHours(workHours)
+  const workHours = getWorkHours(WORK_HOURS)
+  const hours = eachHourOfInterval({
+    start: workHours.since,
+    end: workHours.till,
+  }).slice(0, -1)
+  const reservations = tables
+    .map(({ reservations }, index) => reservations.map((reservation) => ({ tableIndex: index, ...reservation })))
+    .flat()
+
   return (
     <div className="relative inline-flex flex-col">
       <div className="h-56 sticky top-0 z-30 bg-gray-500">
-        <div className="flex sticky left-0 top-0 z-30 bg-white w-screen" style={{ width: 'calc(100vw - 15px)' }}>
+        <div className="flex sticky left-0 top-0 z-30 bg-white w-screen">
           <div className="w-full h-56 px-4">asd</div>
         </div>
       </div>
       <div
-        className="w-100 h-100 absolute top-[19rem] left-28 pointer-events-none inline-flex bg-red-500/20"
-        style={{ width: 'calc(100% - 7rem)', height: `${tables.length * 5}rem` }}
+        className="absolute top-[19rem] left-28 pointer-events-none inline-flex bg-red-500/50"
+        style={{ width: 'calc(100% - 8rem)', height: `${tables.length * 5}rem` }}
       >
-        <Draggable />
-        <Draggable />
+        <div className="relative w-full h-full left-0 top-0">
+          <Draggable data={reservations} workHours={workHours} />
+        </div>
       </div>
       <div
-        className="grid border-r"
+        className="grid border-r border-b"
         style={{
           gridTemplateColumns: `112px repeat(${hours.length},11rem)`,
         }}
@@ -64,21 +102,26 @@ export const DashboardPage = () => {
           </button>
         </div>
         {hours.map((hour) => (
-          <div key={hour} className="flex items-center justify-center border border-l-0 sticky top-56 z-10 bg-white">
-            {formatHour(hour)}
+          <div
+            key={hour.getTime()}
+            className="flex items-center justify-center border border-l-0 sticky top-56 z-10 bg-white"
+          >
+            {format(hour, 'HH:00')}
           </div>
         ))}
-        {tables.map((table) => (
-          <>
-            <div key={table} className="flex h-20 sticky left-0 z-20 bg-white">
+        {tables.map(({ id, name, seats }) => (
+          <Fragment key={id}>
+            <div key={id} className="flex h-20 sticky left-0 z-20 bg-white">
               <div className="flex border-t">
-                <div className="text-gray-700 border-r border-l w-14 flex items-center justify-center">1</div>
-                <div className="text-gray-700 border-r w-14 flex items-center justify-center">1-2</div>
+                <div className="text-gray-700 border-r border-l w-14 flex items-center justify-center">{name}</div>
+                <div className="text-gray-700 border-r w-14 flex items-center justify-center">
+                  {seats.min} - {seats.max}
+                </div>
               </div>
             </div>
             {hours.map((hour) => (
               <div
-                key={hour}
+                key={hour.getTime()}
                 className="flex items-center justify-center  bg-white"
                 style={{
                   backgroundImage:
@@ -87,7 +130,7 @@ export const DashboardPage = () => {
                 }}
               ></div>
             ))}
-          </>
+          </Fragment>
         ))}
       </div>
     </div>
