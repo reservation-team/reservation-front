@@ -24,8 +24,32 @@ const tables = [
     name: '1',
     seats: { min: 1, max: 2 },
     reservations: [
-      { id: 1, time: { since: setMinutes(setHours(day, 11), 0), till: setMinutes(setHours(day, 12), 30) }, data: {} },
-      { id: 2, time: { since: setMinutes(setHours(day, 13), 0), till: setMinutes(setHours(day, 15), 0) }, data: {} },
+      {
+        id: 1,
+        tableId: 1,
+        seats: 1,
+        time: { since: setMinutes(setHours(day, 11), 0), till: setMinutes(setHours(day, 12), 30) },
+        comment: 'test11',
+        person: {
+          firstName: 'Иван',
+          lastName: 'Иванов',
+          email: '',
+          phone: '',
+        },
+      },
+      {
+        id: 2,
+        tableId: 1,
+        seats: 1,
+        time: { since: setMinutes(setHours(day, 13), 0), till: setMinutes(setHours(day, 15), 0) },
+        comment: 'test21',
+        person: {
+          firstName: 'Семен',
+          lastName: 'Иванов',
+          email: '',
+          phone: '',
+        },
+      },
     ],
   },
   {
@@ -39,8 +63,32 @@ const tables = [
     name: '3',
     seats: { min: 3, max: 4 },
     reservations: [
-      { id: 3, time: { since: setMinutes(setHours(day, 11), 0), till: setMinutes(setHours(day, 12), 0) }, data: {} },
-      { id: 4, time: { since: setMinutes(setHours(day, 13), 0), till: setMinutes(setHours(day, 15), 0) }, data: {} },
+      {
+        id: 3,
+        tableId: 3,
+        seats: 3,
+        time: { since: setMinutes(setHours(day, 11), 0), till: setMinutes(setHours(day, 12), 0) },
+        comment: 'test33',
+        person: {
+          firstName: 'Игорь',
+          lastName: 'Иванов',
+          email: '',
+          phone: '',
+        },
+      },
+      {
+        id: 4,
+        tableId: 3,
+        seats: 4,
+        time: { since: setMinutes(setHours(day, 13), 0), till: setMinutes(setHours(day, 15), 0) },
+        comment: 'test43',
+        person: {
+          firstName: 'Максим',
+          lastName: 'Иванов',
+          email: '',
+          phone: '',
+        },
+      },
     ],
   },
   {
@@ -48,8 +96,32 @@ const tables = [
     name: '4',
     seats: { min: 3, max: 4 },
     reservations: [
-      { id: 5, time: { since: setMinutes(setHours(day, 12), 0), till: setMinutes(setHours(day, 13), 0) }, data: {} },
-      { id: 6, time: { since: setMinutes(setHours(day, 14), 15), till: setMinutes(setHours(day, 15), 30) }, data: {} },
+      {
+        id: 5,
+        tableId: 4,
+        seats: 4,
+        time: { since: setMinutes(setHours(day, 12), 0), till: setMinutes(setHours(day, 13), 0) },
+        comment: 'test54',
+        person: {
+          firstName: 'Влад',
+          lastName: 'Иванов',
+          email: '',
+          phone: '',
+        },
+      },
+      {
+        id: 6,
+        tableId: 4,
+        seats: 3,
+        time: { since: setMinutes(setHours(day, 14), 15), till: setMinutes(setHours(day, 15), 30) },
+        comment: 'test63',
+        person: {
+          firstName: 'Денис',
+          lastName: 'Иванов',
+          email: '',
+          phone: '',
+        },
+      },
     ],
   },
 ]
@@ -60,9 +132,6 @@ export const DashboardPage = () => {
     start: workHours.since,
     end: workHours.till,
   }).slice(0, -1)
-  const reservations = tables
-    .map(({ reservations }, index) => reservations.map((reservation) => ({ tableIndex: index, ...reservation })))
-    .flat()
 
   return (
     <div className="relative inline-flex flex-col">
@@ -72,11 +141,11 @@ export const DashboardPage = () => {
         </div>
       </div>
       <div
-        className="absolute top-[19rem] left-28 pointer-events-none inline-flex bg-red-500/50"
+        className="absolute top-[19rem] left-28 pointer-events-none inline-flex"
         style={{ width: 'calc(100% - 8rem)', height: `${tables.length * 5}rem` }}
       >
         <div className="relative w-full h-full left-0 top-0">
-          <Draggable data={reservations} workHours={workHours} />
+          <Draggable tables={tables} workHours={workHours} />
         </div>
       </div>
       <div
@@ -106,7 +175,7 @@ export const DashboardPage = () => {
             key={hour.getTime()}
             className="flex items-center justify-center border border-l-0 sticky top-56 z-10 bg-white"
           >
-            {format(hour, 'HH:00')}
+            {format(hour, 'HH:mm')}
           </div>
         ))}
         {tables.map(({ id, name, seats }) => (

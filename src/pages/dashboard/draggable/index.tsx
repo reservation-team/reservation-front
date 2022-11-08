@@ -1,6 +1,6 @@
-import { DndContext, useSensor, MouseSensor, TouchSensor, KeyboardSensor, useSensors, DragOverlay } from '@dnd-kit/core'
+import { DndContext, useSensor, MouseSensor, TouchSensor, KeyboardSensor, useSensors } from '@dnd-kit/core'
 import { restrictToParentElement } from '@dnd-kit/modifiers'
-import { addMinutes, differenceInMinutes, roundToNearestMinutes } from 'date-fns'
+import { addMinutes, differenceInMinutes, isBefore, roundToNearestMinutes, subMinutes } from 'date-fns'
 import { useState } from 'react'
 import { Item } from './item'
 export enum Axis {
@@ -9,7 +9,7 @@ export enum Axis {
   Horizontal,
 }
 
-function snapToGrid(args: any) {
+const snapToGrid = (args: any) => {
   const { transform } = args
   return {
     ...transform,
@@ -18,13 +18,54 @@ function snapToGrid(args: any) {
   }
 }
 
-interface DraggableProps {
-  data: any[]
-  workHours: any
+interface Reservation {
+  id: number
+  tableId: number
+  seats: number
+  time: {
+    since: Date
+    till: Date
+  }
+  comment: string
+  person: {
+    firstName: string
+    lastName: string
+    email: string
+    phone: string
+  }
 }
 
-export const Draggable = ({ data, workHours }: DraggableProps) => {
-  const [items, setitems] = useState(data)
+interface DraggableProps {
+  tables: {
+    id: number
+    name: string
+    seats: {
+      min: number
+      max: number
+    }
+    reservations: Reservation[]
+  }[]
+  workHours: {
+    since: Date
+    till: Date
+  }
+}
+
+const getData = (
+  tables: DraggableProps['tables']
+): [tableCoordiantes: Record<string, number>, reservations: Reservation[]] => {
+  let tableCoordinates = {} as Record<string, number>
+  let reservations = []
+  for (const [index, table] of tables.entries()) {
+    tableCoordinates[String(table.id)] = index * 80
+    reservations.push(table.reservations)
+  }
+  return [tableCoordinates, reservations.flat()]
+}
+
+export const Draggable = ({ tables, workHours }: DraggableProps) => {
+  const [tableCoordinates, reservations] = getData(tables)
+  const [items, setitems] = useState(reservations)
   const mouseSensor = useSensor(MouseSensor, {
     activationConstraint: {
       distance: 40,
@@ -43,49 +84,89 @@ export const Draggable = ({ data, workHours }: DraggableProps) => {
 
   const getCoordinates = (item: any) => {
     return {
-      y: item.tableIndex * 80,
+      y: tableCoordinates[item.tableId],
       x: (differenceInMinutes(item.time.since, workHours.since) / 60) * 176,
     }
   }
   const preparedItems = items.map((item) => ({ ...item, ...getCoordinates(item), length: getLength(item) }))
-  const activeItem = preparedItems.find((item) => item.id === activeId)
+
+  const handleLength = (id: any, dx: number, direction: 'left' | 'right') => {
+    setitems((items) =>
+      items.map((item) =>
+        item.id === id
+          ? {
+              ...item,
+              time: {
+                since:
+                  direction === 'left' &&
+                  isBefore(
+                    subMinutes(workHours.since, 1),
+                    roundToNearestMinutes(addMinutes(item.time.since, 15 * (dx / 44)), { nearestTo: 15 })
+                  ) &&
+                  differenceInMinutes(
+                    item.time.till,
+                    roundToNearestMinutes(addMinutes(item.time.since, 15 * (dx / 44)), { nearestTo: 15 })
+                  ) > 60
+                    ? roundToNearestMinutes(addMinutes(item.time.since, 15 * (dx / 44)), { nearestTo: 15 })
+                    : item.time.since,
+                till:
+                  direction === 'right' &&
+                  isBefore(
+                    roundToNearestMinutes(addMinutes(item.time.till, 15 * (dx / 44)), { nearestTo: 15 }),
+                    workHours.till
+                  ) &&
+                  differenceInMinutes(
+                    roundToNearestMinutes(addMinutes(item.time.till, 15 * (dx / 44)), { nearestTo: 15 }),
+                    item.time.since
+                  ) > 60
+                    ? roundToNearestMinutes(addMinutes(item.time.till, 15 * (dx / 44)), { nearestTo: 15 })
+                    : item.time.till,
+              },
+            }
+          : item
+      )
+    )
+  }
+
+  const handleDragStart = (event: any) => setActiveId(event.active.id)
+
+  const handleDragEnd = (event: any) => {
+    setitems((items) =>
+      items.map((item) =>
+        item.id === event.active.id
+          ? {
+              ...item,
+              tableId: Number(
+                Object.keys(tableCoordinates).find(
+                  (key) => tableCoordinates[key] === tableCoordinates[item.tableId] + event.delta.y
+                )
+              ),
+              time: {
+                since: roundToNearestMinutes(addMinutes(item.time.since, 15 * (event.delta.x / 44)), {
+                  nearestTo: 15,
+                }),
+                till: roundToNearestMinutes(addMinutes(item.time.till, 15 * (event.delta.x / 44)), {
+                  nearestTo: 15,
+                }),
+              },
+            }
+          : item
+      )
+    )
+
+    setActiveId(null)
+  }
+
   return (
     <DndContext
       sensors={sensors}
-      onDragEnd={({ delta }) => {
-        setitems((items) =>
-          items.map((item) =>
-            item.id === activeId
-              ? {
-                  ...item,
-                  tableIndex: item.tableIndex + Math.floor(delta.y / 80),
-                  time: {
-                    since: roundToNearestMinutes(addMinutes(item.time.since, 15 * (delta.x / 44)), { nearestTo: 15 }),
-                    till: roundToNearestMinutes(addMinutes(item.time.till, 15 * (delta.x / 44)), { nearestTo: 15 }),
-                  },
-                }
-              : item
-          )
-        )
-
-        handleDragEnd()
-      }}
+      onDragEnd={handleDragEnd}
       modifiers={[restrictToParentElement, snapToGrid]}
       onDragStart={handleDragStart}
     >
       {preparedItems.map((item) => (
-        <Item key={item.id} item={item} />
+        <Item key={item.id} item={item} handleLength={handleLength} />
       ))}
-      <DragOverlay dropAnimation={null} modifiers={[restrictToParentElement, snapToGrid]}>
-        {activeId ? <Item key={activeItem.id} item={activeItem} copy /> : null}
-      </DragOverlay>
     </DndContext>
   )
-  function handleDragStart(event: any) {
-    setActiveId(event.active.id)
-  }
-
-  function handleDragEnd() {
-    setActiveId(null)
-  }
 }

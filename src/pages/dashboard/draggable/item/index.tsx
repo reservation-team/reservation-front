@@ -1,42 +1,39 @@
 import { useDraggable } from '@dnd-kit/core'
 import { format } from 'date-fns'
+import { ButtonReisze } from './button-resize'
 
 interface DraggableItemProps {
   item: any
-  copy?: boolean
+  handleLength: (id: any, dx: number, direction: 'left' | 'right') => void
 }
 
-export function Item({ item, copy = false }: DraggableItemProps) {
+export function Item({ item, handleLength }: DraggableItemProps) {
   const { attributes, isDragging, listeners, setNodeRef, transform } = useDraggable({
     id: item.id,
   })
   return (
     <button
-      className="absolute w-44 h-20 flex justify-center items-center pointer-events-auto"
+      className="absolute w-44 h-20 flex justify-center items-center pointer-events-auto px-2"
+      onClick={() => console.log(item)}
       ref={setNodeRef}
       {...listeners}
       {...attributes}
       style={{
-        top: copy ? 0 : item.y,
-        left: copy ? 0 : item.x,
+        top: item.y,
+        left: item.x,
         width: 176 * item.length + 'px',
+        transform: `translateX(${transform?.x ?? 0}px) translateY(${transform?.y ?? 0}px)`,
       }}
     >
-      <div
-        className="h-16 bg-white flex justify-between rounded-md"
-        style={{
-          width: 160 * item.length + 'px',
-        }}
-      >
-        <div className="h-100 w-4 bg-blue-400 rounded-tl rounded-bl"></div>
+      <div className="h-16 bg-white flex justify-between rounded-md border w-full">
+        <ButtonReisze direction="left" id={item.id} handleLength={handleLength} />
         <div className="self-center flex flex-col">
-          <p>
+          <p className="text-sm font-semibold">{item.person.firstName}</p>
+          <p className="text-sm">
             {format(item.time.since, 'HH:mm')}-{format(item.time.till, 'HH:mm')}
           </p>
-          <p>tableIndex:{item.tableIndex}</p>
-          <p>id:{item.id}</p>
         </div>
-        <div className="h-100 w-4 bg-blue-400 rounded-tr rounded-br"></div>
+        <ButtonReisze direction="right" id={item.id} handleLength={handleLength} />
       </div>
     </button>
   )
