@@ -13,8 +13,8 @@ function snapToGrid(args: any) {
   const { transform } = args
   return {
     ...transform,
-    x: Math.ceil(transform.x / 44) * 44,
-    y: Math.ceil(transform.y / 80) * 80,
+    x: Math.round(transform.x / 44) * 44,
+    y: Math.round(transform.y / 80) * 80,
   }
 }
 
@@ -49,7 +49,6 @@ export const Draggable = ({ data, workHours }: DraggableProps) => {
   }
   const preparedItems = items.map((item) => ({ ...item, ...getCoordinates(item), length: getLength(item) }))
   const activeItem = preparedItems.find((item) => item.id === activeId)
-  console.log(preparedItems)
   return (
     <DndContext
       sensors={sensors}
