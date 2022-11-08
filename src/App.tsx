@@ -1,6 +1,6 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { DashboardPage } from './pages/dashboard'
-import { ErrorPage } from './pages/error/indext'
+import { ErrorPage } from './pages/error'
 import { LoginPage } from './pages/login'
 
 const router = createBrowserRouter([
