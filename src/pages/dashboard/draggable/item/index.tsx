@@ -4,17 +4,19 @@ import { ButtonReisze } from './button-resize'
 
 interface DraggableItemProps {
   item: any
-  handleLength: (id: any, dx: number, direction: 'left' | 'right') => void
+  handleLength: any
+  onClick: () => void
 }
 
-export function Item({ item, handleLength }: DraggableItemProps) {
+export function Item({ item, handleLength, onClick }: DraggableItemProps) {
   const { attributes, isDragging, listeners, setNodeRef, transform } = useDraggable({
     id: item.id,
+    data: item,
   })
   return (
     <button
       className="absolute w-44 h-20 flex justify-center items-center pointer-events-auto px-2"
-      onClick={() => console.log(item)}
+      onClick={onClick}
       ref={setNodeRef}
       {...listeners}
       {...attributes}
@@ -26,14 +28,14 @@ export function Item({ item, handleLength }: DraggableItemProps) {
       }}
     >
       <div className="h-16 bg-white flex justify-between rounded-md border w-full">
-        <ButtonReisze direction="left" id={item.id} handleLength={handleLength} />
+        <ButtonReisze direction="left" id={item.id} handleLength={handleLength} item={item} />
         <div className="self-center flex flex-col">
           <p className="text-sm font-semibold">{item.person.firstName}</p>
           <p className="text-sm">
             {format(item.time.since, 'HH:mm')}-{format(item.time.till, 'HH:mm')}
           </p>
         </div>
-        <ButtonReisze direction="right" id={item.id} handleLength={handleLength} />
+        <ButtonReisze direction="right" id={item.id} handleLength={handleLength} item={item} />
       </div>
     </button>
   )

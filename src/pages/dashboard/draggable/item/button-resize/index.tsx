@@ -4,10 +4,11 @@ import { useEffect, useState } from 'react'
 interface ButtonReiszeProps {
   direction: 'left' | 'right'
   id: any
-  handleLength: (id: any, dx: number, direction: 'left' | 'right') => void
+  handleLength: any
+  item: any
 }
 
-export const ButtonReisze = ({ direction, id, handleLength }: ButtonReiszeProps) => {
+export const ButtonReisze = ({ direction, id, handleLength, item }: ButtonReiszeProps) => {
   const [dx, setDx] = useState(0)
   const { attributes, isDragging, listeners, transform } = useDraggable({
     id: 'resizeButton-' + id + '' + direction,
@@ -15,7 +16,7 @@ export const ButtonReisze = ({ direction, id, handleLength }: ButtonReiszeProps)
   useEffect(() => {
     if (isDragging) {
       setDx(transform?.x ?? 0)
-      handleLength(id, (transform?.x ?? 0) - dx, direction)
+      handleLength(item, (transform?.x ?? 0) - dx, direction)
     }
     if (!isDragging) {
       setDx(0)
