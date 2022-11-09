@@ -27,7 +27,9 @@ export const ButtonReisze = ({ direction, id, handleLength, item }: ButtonReisze
     <div
       {...listeners}
       {...attributes}
-      className={`h-100 w-4 bg-blue-400 ${direction === 'left' ? 'rounded-tl rounded-bl' : 'rounded-tr rounded-br'}`}
+      className={`h-100 w-4 bg-blue-400 cursor-ew-resize ${
+        direction === 'left' ? 'rounded-tl rounded-bl' : 'rounded-tr rounded-br'
+      }`}
     ></div>
   )
 }
