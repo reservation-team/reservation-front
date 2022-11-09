@@ -120,19 +120,32 @@ export const FormReservation = ({
                     Бронирование
                   </Dialog.Title>
                   <form onSubmit={handleSubmit(onSubmit)} className="space-y-1 mt-2">
-                    <div className="flex space-x-4">
-                      <Select options={hours} {...register('since', { required: true })} />
-                      <Select options={hours} {...register('till', { required: true })} />
+                    <div>
+                      <p className="block text-sm font-medium text-gray-700">Время</p>
+                      <div className="flex space-x-4">
+                        <div className="w-2/4">
+                          <Select options={hours} {...register('since', { required: true })} />
+                        </div>
+                        <div className="w-2/4">
+                          <Select className="w-2/4" options={hours} {...register('till', { required: true })} />
+                        </div>
+                      </div>
                     </div>
-                    <InputText
-                      label="Количетсво мест"
-                      type="number"
-                      min="1"
-                      max="10"
-                      {...register('seats', { required: true })}
-                    />
-                    <Select label="Стол" options={tableOptions} {...register('tableId', { required: true })} />
-                    <InputText label="Имя" {...register('firstName')} />
+                    <div className="flex space-x-4">
+                      <div className="w-2/4">
+                        <InputText
+                          label="Количетсво мест"
+                          type="number"
+                          min="1"
+                          max="10"
+                          {...register('seats', { required: true })}
+                        />
+                      </div>
+                      <div className="w-2/4">
+                        <Select label="Стол" options={tableOptions} {...register('tableId', { required: true })} />
+                      </div>
+                    </div>
+                    <InputText label="Имя" {...register('firstName', { required: true })} />
                     <InputText label="Фамилия" {...register('lastName')} />
                     <InputText label="Почта" type="email" {...register('email')} />
                     <InputText label="Телефон" type="tel" {...register('phone')} />

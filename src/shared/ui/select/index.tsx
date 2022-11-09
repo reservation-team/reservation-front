@@ -1,6 +1,6 @@
-import { forwardRef } from 'react'
+import { forwardRef, SelectHTMLAttributes } from 'react'
 
-interface SelectProps {
+interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   name: string
   label?: string
   options: { value: string; label: string }[]
@@ -8,7 +8,7 @@ interface SelectProps {
 
 export const Select = forwardRef(({ name, label, options, ...props }: SelectProps, ref) => {
   return (
-    <>
+    <div className="flex flex-col">
       {label && (
         <label htmlFor={name} className="block text-sm font-medium text-gray-700">
           {label}
@@ -28,6 +28,6 @@ export const Select = forwardRef(({ name, label, options, ...props }: SelectProp
           </option>
         ))}
       </select>
-    </>
+    </div>
   )
 })
