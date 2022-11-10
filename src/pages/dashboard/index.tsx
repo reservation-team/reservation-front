@@ -210,7 +210,7 @@ export const DashboardPage = () => {
     <div className="relative inline-flex flex-col">
       <div className="h-56 sticky top-0 z-30 bg-gray-500">
         <div className="flex sticky left-0 top-0 z-30 bg-white w-screen">
-          <div className="w-full h-56 px-4">asd</div>
+          <div className="w-full h-56 px-4">{/* asd */}</div>
           {showModal && (
             <FormReservation
               tables={tables}

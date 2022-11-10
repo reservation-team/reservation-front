@@ -80,7 +80,7 @@ export const FormReservation = ({
       handleClose()
       return
     }
-    addReservation(1, reservation)
+    addReservation(reservation.tableId, reservation)
     handleClose()
   }
 
