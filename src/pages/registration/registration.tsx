@@ -40,7 +40,9 @@ export const RegistrationPage = () => {
           {...register('сonfirmPassword')}
         ></InputText>
         <div className="w-full my-[24px]">
-          <Button type="submit">Зарегистрироваться</Button>
+          <Button type="submit" full>
+            Зарегистрироваться
+          </Button>
         </div>
         <div className="flex items-center  mb-[24px]">
           <label className="text-sm font-medium leading-5 text-gray-500">Есть учетная запись?</label>

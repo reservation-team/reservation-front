@@ -32,7 +32,9 @@ export const LoginPage = () => {
             Забыли пароль?
           </a>
         </div>
-        <Button type="submit">Войти</Button>
+        <Button type="submit" full>
+          Войти
+        </Button>
         <div className="flex mt-[24px] ">
           <label className="text-sm font-medium leading-5 text-gray-500">Нет учетной записи?</label>
           <Link to="/registration" className="text-indigo-600 text-sm leading-5 font-medium pl-[10px]">
