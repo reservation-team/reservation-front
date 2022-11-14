@@ -1,51 +1,47 @@
-import { useForm } from "react-hook-form";
+import { useForm } from 'react-hook-form'
+import { Link } from 'react-router-dom'
+import { Button } from '../../shared/ui/button'
+import { InputText } from '../../shared/ui/input-text'
 
 export const LoginPage = () => {
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit } = useForm()
 
-  const onSubmit = (data:any) => console.log(data);
+  const onSubmit = (data: any) => console.log(data)
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center justify-center min-h-screen">
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-wrap flex-col items-center px-10 py-3 max-w-[100%] w-[448px] bg-white-400 shadow-xl rounded-xl">
+        className="space-y-5 px-10 py-3 max-w-[100%] w-[448px] bg-white-400 shadow-xl rounded-xl"
+      >
         <h1 className="text-3xl font-extrabold mr-auto mb-5 text-gray-900	">Вход</h1>
-        <label className="text-sm mr-auto mb-1 text-gray-700 font-medium leading-5">Электронная почта</label>
-        <input
-          {...register("email")}
-          placeholder="Email"
-          className="block w-full mb-10 rounded border border-gray-300 h-[42px]">
-          </input>
-        <label className="text-sm mr-auto mb-1 text-gray-700 font-medium leading-5">Пароль</label>
-        <input
-          placeholder="Password"
-          {...register("password")}
-          className="block w-full mb-5 rounded border border-gray-300 h-[42px]">
-          </input>
-        <div className="flex max-w-[100%] w-[448px] justify-between items-center mb-5">
+        <InputText label="Электронная почта" {...register('email')} placeholder="Email"></InputText>
+        <InputText label="Пароль" placeholder="Password" {...register('password')}></InputText>
+        <div className="flex justify-between items-center mb-5">
           <div>
             <input
               type="checkbox"
               value="otherComputer"
               placeholder="check"
-              {...register("check")}
-              className="">
-            </input>
+              {...register('check')}
+              className=""
+            ></input>
             <label className="text-sm font-medium leading-5 pl-[5px]">Чужой компьютер</label>
           </div>
-          <a href="/rec" className="text-indigo-600 text-sm leading-5 font-medium">Забыли пароль?</a>
+          <a href="/rec" className="text-indigo-600 text-sm leading-5 font-medium">
+            Забыли пароль?
+          </a>
         </div>
-        <button
-          type="submit"
-          className="hover:bg-indigo-800 active:bg-violet-700 bg-indigo-600 w-full h-10 rounded text-white mb-5">
+        <Button type="submit" full>
           Войти
-        </button>
-        <div className="flex max-w-[100%] w-[448px] justify-between items-center">
+        </Button>
+        <div className="flex mt-[24px] ">
           <label className="text-sm font-medium leading-5 text-gray-500">Нет учетной записи?</label>
-          <a href="/reg" className="text-indigo-600 text-sm leading-5 font-medium">Зарегистрироваться</a>
+          <Link to="/registration" className="text-indigo-600 text-sm leading-5 font-medium pl-[10px]">
+            Зарегистрироваться
+          </Link>
         </div>
       </form>
     </div>
-  );
+  )
 }
