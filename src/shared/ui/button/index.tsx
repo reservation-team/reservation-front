@@ -9,7 +9,7 @@ export const Button = ({ variant = 'primary', children, ...props }: ButtonProps)
   return (
     <button
       {...props}
-      className={`inline-flex justify-center rounded-md border border-transparent py-2 px-4 text-base font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2
+      className={`w-full inline-flex justify-center rounded-md border border-transparent py-2 px-4 text-base font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 
       ${
         variant === 'primary'
           ? 'bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500'
