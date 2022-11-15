@@ -12,7 +12,7 @@ export const Select = forwardRef(({ name, label, options, ...props }: SelectProp
       {label && (
         <label htmlFor={name} className="block text-sm font-medium text-gray-700">
           {label}
-        </label>
+        </label
       )}
 
       <select
