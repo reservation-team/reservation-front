@@ -1,41 +1,13 @@
 import { Fragment, useState } from 'react'
-import { addDays, eachHourOfInterval, setHours } from 'date-fns'
+import { setHours } from 'date-fns'
 import { format, setMinutes, setSeconds } from 'date-fns/esm'
 import { Draggable } from './draggable'
 import { FormReservation } from './form-reservation'
 import { Button } from '../../shared/ui/button'
+import { UseTables } from './lib/use-tables'
 
 const WORK_HOURS = { since: '11:00', till: '2:00' }
 const day = setMinutes(setSeconds(new Date(), 0), 0)
-const getWorkHours = (workHours: { since: string; till: string }) => {
-  const sinceHour = Number(workHours.since.split(':')[0])
-  const tillHour = Number(workHours.till.split(':')[0])
-
-  const since = setHours(day, sinceHour)
-  if (sinceHour > tillHour) {
-    const till = setHours(addDays(day, 1), tillHour)
-    return { since, till }
-  }
-  const till = setHours(day, tillHour)
-  return { since, till }
-}
-
-interface Reservation {
-  id: number
-  tableId: number
-  seats: number
-  time: {
-    since: Date
-    till: Date
-  }
-  comment: string
-  person: {
-    firstName: string
-    lastName: string
-    email: string
-    phone: string
-  }
-}
 
 const TABLES = [
   {
@@ -146,85 +118,32 @@ const TABLES = [
 ]
 
 export const DashboardPage = () => {
-  const [tables, setTables] = useState(TABLES)
-  const workHours = getWorkHours(WORK_HOURS)
-  const hours = eachHourOfInterval({
-    start: workHours.since,
-    end: workHours.till,
-  }).slice(0, -1)
+  const [tables, hours, workHours, controller] = UseTables(WORK_HOURS, TABLES)
   const [modalItem, setModalItem] = useState(null)
-  const [showModal, setShowModal] = useState(false)
+  const [showFormReservation, setShowFormReservation] = useState(false)
 
-  const handleModal = (item?: any) => {
+  const handleFormReservation = (item?: any) => {
     setModalItem(item ?? null)
-    setShowModal((show) => !show)
+    setShowFormReservation((show) => !show)
   }
 
-  const addReservation = (tableId: any, reservation: Reservation) => {
-    setTables((tables: any) =>
-      tables.map((table: any) =>
-        table.id === tableId
-          ? {
-              ...table,
-              reservations: [...table.reservations, reservation],
-            }
-          : table
-      )
-    )
-  }
-
-  const removeReservation = (tableId: any, reservationId: any) => {
-    setTables((tables: any) =>
-      tables.map((table: any) =>
-        table.id === tableId
-          ? {
-              ...table,
-              reservations: table.reservations.filter((reservation: any) => reservation.id !== reservationId),
-            }
-          : table
-      )
-    )
-  }
-
-  const updateReservation = (oldTableId: any, newTableId: any, reservation: Reservation) => {
-    removeReservation(oldTableId, reservation.id)
-    addReservation(newTableId, reservation)
-  }
-
-  const updateReservationData = (reservation: Reservation) => {
-    setTables((tables: any) =>
-      tables.map((table: any) =>
-        table.id === reservation.tableId
-          ? {
-              ...table,
-              reservations: table.reservations.map((oldReservation: any) =>
-                oldReservation.id === reservation.id ? { ...reservation } : oldReservation
-              ),
-            }
-          : table
-      )
-    )
-  }
-  // console.log(tables)
   return (
     <div className="relative inline-flex flex-col">
       <div className="h-56 sticky top-0 z-30 bg-gray-500">
         <div className="flex sticky left-0 top-0 z-30 bg-white w-screen">
           <div className="w-full h-56 px-4">{/* asd */}</div>
-          {showModal && (
+          {showFormReservation && (
             <FormReservation
               tables={tables}
               workHours={workHours}
               item={modalItem}
-              isOpen={showModal}
-              handleModal={handleModal}
-              addReservation={addReservation}
-              removeReservation={removeReservation}
-              updateReservation={updateReservation}
+              isOpen={showFormReservation}
+              handleFormReservation={handleFormReservation}
+              controller={controller}
             />
           )}
           <div className="mt-auto px-4 py-3 text-right sm:px-6">
-            <Button onClick={() => handleModal()}>Новое бронирование</Button>
+            <Button onClick={() => handleFormReservation()}>Новое бронирование</Button>
           </div>
         </div>
       </div>
@@ -236,10 +155,8 @@ export const DashboardPage = () => {
           <Draggable
             tables={tables}
             workHours={workHours}
-            updateReservation={updateReservation}
-            removeReservation={removeReservation}
-            updateReservationData={updateReservationData}
-            handleModal={handleModal}
+            controller={controller}
+            handleFormReservation={handleFormReservation}
           />
         </div>
       </div>

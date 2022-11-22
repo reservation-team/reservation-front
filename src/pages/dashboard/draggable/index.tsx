@@ -2,6 +2,7 @@ import { DndContext, useSensor, MouseSensor, TouchSensor, KeyboardSensor, useSen
 import { restrictToParentElement } from '@dnd-kit/modifiers'
 import { addMinutes, differenceInMinutes, isBefore, roundToNearestMinutes, subMinutes } from 'date-fns'
 import { Item } from './item'
+import { Reservation, Table } from '../../../shared/types'
 export enum Axis {
   All,
   Vertical,
@@ -17,46 +18,22 @@ const snapToGrid = (args: any) => {
   }
 }
 
-interface Reservation {
-  id: number
-  tableId: number
-  seats: number
-  time: {
-    since: Date
-    till: Date
-  }
-  comment: string
-  person: {
-    firstName: string
-    lastName: string
-    email: string
-    phone: string
-  }
-}
-
 interface DraggableProps {
-  tables: {
-    id: number
-    name: string
-    seats: {
-      min: number
-      max: number
-    }
-    reservations: Reservation[]
-  }[]
+  tables: Table[]
   workHours: {
     since: Date
     till: Date
   }
-  updateReservation: (oldTableId: any, newTableId: any, reservation: Reservation) => void
-  removeReservation: (tableId: any, reservationId: any) => void
-  updateReservationData: (reservation: Reservation) => void
-  handleModal: any
+  controller: {
+    addReservation: (tableId: any, reservation: Reservation) => void
+    removeReservation: (tableId: any, reservationId: any) => void
+    updateReservation: (oldTableId: any, newTableId: any, reservation: Reservation) => void
+    updateReservationData: (reservation: Reservation) => void
+  }
+  handleFormReservation: (item?: any) => void
 }
 
-const getData = (
-  tables: DraggableProps['tables']
-): [tableCoordiantes: Record<string, number>, reservations: Reservation[]] => {
+const getData = (tables: Table[]): [tableCoordiantes: Record<string, number>, reservations: Reservation[]] => {
   let tableCoordinates = {} as Record<string, number>
   let reservations = []
   for (const [index, table] of tables.entries()) {
@@ -66,13 +43,7 @@ const getData = (
   return [tableCoordinates, reservations.flat()]
 }
 
-export const Draggable = ({
-  tables,
-  workHours,
-  updateReservation,
-  updateReservationData,
-  handleModal,
-}: DraggableProps) => {
+export const Draggable = ({ tables, workHours, controller, handleFormReservation }: DraggableProps) => {
   const [tableCoordinates, reservations] = getData(tables)
 
   const mouseSensor = useSensor(MouseSensor, {
@@ -128,7 +99,7 @@ export const Draggable = ({
             : item.time.till,
       },
     }
-    updateReservationData(newReservation)
+    controller.updateReservationData(newReservation)
   }
 
   const handleDragEnd = (event: any) => {
@@ -139,7 +110,7 @@ export const Draggable = ({
         (key) => tableCoordinates[key] === tableCoordinates[reseravtion.tableId] + event.delta.y
       )
     )
-    updateReservation(reseravtion.tableId, newTableId, {
+    controller.updateReservation(reseravtion.tableId, newTableId, {
       ...reseravtion,
       tableId: newTableId,
       time: {
@@ -155,7 +126,7 @@ export const Draggable = ({
   return (
     <DndContext sensors={sensors} onDragEnd={handleDragEnd} modifiers={[restrictToParentElement, snapToGrid]}>
       {preparedItems.map((item) => (
-        <Item key={item.id} item={item} handleLength={handleLength} onClick={() => handleModal(item)} />
+        <Item key={item.id} item={item} handleLength={handleLength} onClick={() => handleFormReservation(item)} />
       ))}
     </DndContext>
   )

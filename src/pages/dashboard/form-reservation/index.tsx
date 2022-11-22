@@ -6,19 +6,35 @@ import { InputText } from '../../../shared/ui/input-text'
 import { TextArea } from '../../../shared/ui/textarea'
 import { Button } from '../../../shared/ui/button'
 import { Select } from '../../../shared/ui/select'
+import { Reservation, Table } from '../../../shared/types'
 
 const day = setMinutes(setSeconds(new Date(), 0), 0)
+
+interface FormReservationProps {
+  tables: Table[]
+  workHours: {
+    since: Date
+    till: Date
+  }
+  item?: Reservation | null
+  isOpen: boolean
+  handleFormReservation: (item?: any) => void
+  controller: {
+    addReservation: (tableId: any, reservation: Reservation) => void
+    removeReservation: (tableId: any, reservationId: any) => void
+    updateReservation: (oldTableId: any, newTableId: any, reservation: Reservation) => void
+    updateReservationData: (reservation: Reservation) => void
+  }
+}
 
 export const FormReservation = ({
   tables,
   workHours,
   item,
   isOpen,
-  handleModal,
-  addReservation,
-  removeReservation,
-  updateReservation,
-}: any) => {
+  handleFormReservation,
+  controller,
+}: FormReservationProps) => {
   const hours = useMemo(
     () =>
       eachMinuteOfInterval(
@@ -59,7 +75,7 @@ export const FormReservation = ({
   })
 
   const handleClose = () => {
-    handleModal()
+    handleFormReservation()
   }
   const onSubmit = (data: any) => {
     const reservation = {
@@ -76,16 +92,16 @@ export const FormReservation = ({
       },
     }
     if (item) {
-      updateReservation(item?.tableId, reservation.tableId, reservation)
+      controller.updateReservation(item?.tableId, reservation.tableId, reservation)
       handleClose()
       return
     }
-    addReservation(reservation.tableId, reservation)
+    controller.addReservation(reservation.tableId, reservation)
     handleClose()
   }
 
   const handleRemove = () => {
-    removeReservation(item.tableId, item.id)
+    controller.removeReservation(item?.tableId, item?.id)
     handleClose()
   }
 
