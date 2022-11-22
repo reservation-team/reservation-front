@@ -7,6 +7,7 @@ import { Button } from '../../shared/ui/button'
 import { UseTables } from './lib/use-tables'
 import { Menu } from './menu'
 import { FormSettings } from './form-settings'
+import { ListTables } from './list-tables'
 
 const day = setMinutes(setSeconds(new Date(), 0), 0)
 
@@ -136,6 +137,7 @@ export const DashboardPage = () => {
   const [formReservationItem, setFormReservationItem] = useState(null)
   const [showFormReservation, setShowFormReservation] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
+  const [showTablesSettings, setShowTablesSettings] = useState(false)
 
   const handleFormReservation = (item?: any) => {
     setFormReservationItem(item ?? null)
@@ -148,9 +150,9 @@ export const DashboardPage = () => {
   return (
     <div className="relative inline-flex flex-col">
       <div className="h-56 sticky top-0 z-30 bg-gray-500">
-        <div className="sticky left-0 top-0 z-30 bg-white w-screen">
+        <div className="sticky left-0 top-0 z-30 bg-gray-50 w-screen">
           <div className="flex flex-col justify-between w-full h-56 px-4">
-            <Menu setShowSettings={setShowSettings} />
+            <Menu setShowSettings={setShowSettings} setShowTablesSettings={setShowTablesSettings} />
             <div className="w-full flex justify-between pb-4 items-center">
               <p className="text-2xl font-medium">{restaraunt.name}</p>
               <Button onClick={() => handleFormReservation()}>Новое бронирование</Button>
@@ -172,6 +174,14 @@ export const DashboardPage = () => {
               isOpen={showSettings}
               onClose={() => setShowSettings(false)}
               handleRestarauntUpdate={handleRestarauntUpdate}
+            />
+          )}
+          {showTablesSettings && (
+            <ListTables
+              tables={tables}
+              isOpen={showTablesSettings}
+              onClose={() => setShowTablesSettings(false)}
+              controller={controller}
             />
           )}
         </div>

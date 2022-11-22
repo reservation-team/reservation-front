@@ -71,11 +71,28 @@ export const UseTables = (workHoursRaw: { since: string; till: string }, tablesR
     )
   }
 
+  const removeTable = (id: any) => {
+    setTables((tables: any) => tables.filter((table: Table) => table.id !== id))
+  }
+
+  const updateTable = (table: Table) => {
+    setTables((tables: any) =>
+      tables.map((oldTable: Table) => (table.id === oldTable.id ? { ...oldTable, ...table } : oldTable))
+    )
+  }
+
+  const addTable = (table: Table) => {
+    setTables((tables: any) => [...tables, table])
+  }
+
   const controller = {
     addReservation,
     removeReservation,
     updateReservation,
     updateReservationData,
+    removeTable,
+    updateTable,
+    addTable,
   }
 
   return [tables, hours, workHours, controller] as const

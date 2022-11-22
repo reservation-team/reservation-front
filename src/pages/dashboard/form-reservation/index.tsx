@@ -6,7 +6,7 @@ import { InputText } from '../../../shared/ui/input-text'
 import { TextArea } from '../../../shared/ui/textarea'
 import { Button } from '../../../shared/ui/button'
 import { Select } from '../../../shared/ui/select'
-import { Reservation, Table } from '../../../shared/types'
+import { Controller, Reservation, Table } from '../../../shared/types'
 
 const day = setMinutes(setSeconds(new Date(), 0), 0)
 
@@ -19,12 +19,7 @@ interface FormReservationProps {
   item?: Reservation | null
   isOpen: boolean
   handleFormReservation: (item?: any) => void
-  controller: {
-    addReservation: (tableId: any, reservation: Reservation) => void
-    removeReservation: (tableId: any, reservationId: any) => void
-    updateReservation: (oldTableId: any, newTableId: any, reservation: Reservation) => void
-    updateReservationData: (reservation: Reservation) => void
-  }
+  controller: Controller
 }
 
 export const FormReservation = ({
@@ -132,8 +127,19 @@ export const FormReservation = ({
                 leaveTo="opacity-0 scale-95"
               >
                 <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                  <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
+                  <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900 flex justify-between">
                     Бронирование
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="cursor-pointer w-6 h-6"
+                      onClick={handleClose}
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
                   </Dialog.Title>
                   <form onSubmit={handleSubmit(onSubmit)} className="space-y-1 mt-2">
                     <div>
@@ -167,7 +173,7 @@ export const FormReservation = ({
                     <InputText label="Телефон" type="tel" {...register('phone')} />
                     <TextArea label="Комментарий" {...register('comment')} />
                     <div className="flex justify-between !mt-4">
-                      <Button>{item ? 'Изменить' : 'Добавить'}</Button>
+                      <Button>{item ? 'Сохранить' : 'Добавить'}</Button>
                       {item && (
                         <Button type="button" variant="secondary" onClick={handleRemove}>
                           Удалить

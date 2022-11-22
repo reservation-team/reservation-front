@@ -2,7 +2,7 @@ import { DndContext, useSensor, MouseSensor, TouchSensor, KeyboardSensor, useSen
 import { restrictToParentElement } from '@dnd-kit/modifiers'
 import { addMinutes, differenceInMinutes, isBefore, roundToNearestMinutes, subMinutes } from 'date-fns'
 import { Item } from './item'
-import { Reservation, Table } from '../../../shared/types'
+import { Controller, Reservation, Table } from '../../../shared/types'
 export enum Axis {
   All,
   Vertical,
@@ -24,12 +24,7 @@ interface DragOverlayProps {
     since: Date
     till: Date
   }
-  controller: {
-    addReservation: (tableId: any, reservation: Reservation) => void
-    removeReservation: (tableId: any, reservationId: any) => void
-    updateReservation: (oldTableId: any, newTableId: any, reservation: Reservation) => void
-    updateReservationData: (reservation: Reservation) => void
-  }
+  controller: Controller
   handleFormReservation: (item?: any) => void
 }
 

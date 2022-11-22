@@ -99,8 +99,19 @@ export const FormSettings = ({ restaraunt, isOpen, onClose, handleRestarauntUpda
                 leaveTo="opacity-0 scale-95"
               >
                 <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                  <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
+                  <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900 flex justify-between">
                     Настройки
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="cursor-pointer w-6 h-6"
+                      onClick={onClose}
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
                   </Dialog.Title>
                   <form onSubmit={handleSubmit(onSubmit)} className="space-y-1 mt-2">
                     <div>
@@ -131,9 +142,6 @@ export const FormSettings = ({ restaraunt, isOpen, onClose, handleRestarauntUpda
                     <TextArea label="Описание" {...register('description')} />
                     <div className="flex justify-between !mt-4">
                       <Button>Сохранить</Button>
-                      <Button type="button" variant="secondary" onClick={onClose}>
-                        Отменить
-                      </Button>
                     </div>
                   </form>
                 </Dialog.Panel>

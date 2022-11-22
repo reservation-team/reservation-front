@@ -39,3 +39,13 @@ export interface Restaraunt {
   }
   defaultReservationTime: number
 }
+
+export interface Controller {
+  addReservation: (tableId: any, reservation: Reservation) => void
+  removeReservation: (tableId: any, reservationId: any) => void
+  updateReservation: (oldTableId: any, newTableId: any, reservation: Reservation) => void
+  updateReservationData: (reservation: Reservation) => void
+  removeTable: (id: any) => void
+  updateTable: (table: Table) => void
+  addTable: (table: Table) => void
+}
