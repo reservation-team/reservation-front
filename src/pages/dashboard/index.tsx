@@ -1,7 +1,7 @@
 import { Fragment, useState } from 'react'
 import { setHours } from 'date-fns'
 import { format, setMinutes, setSeconds } from 'date-fns/esm'
-import { Draggable } from './draggable'
+import { DragOverlay } from './drag-overlay'
 import { FormReservation } from './form-reservation'
 import { Button } from '../../shared/ui/button'
 import { UseTables } from './lib/use-tables'
@@ -152,7 +152,7 @@ export const DashboardPage = () => {
         style={{ width: 'calc(100% - 8rem)', height: `${tables.length * 5}rem` }}
       >
         <div className="relative w-full h-full left-0 top-0 border-r border-b">
-          <Draggable
+          <DragOverlay
             tables={tables}
             workHours={workHours}
             controller={controller}

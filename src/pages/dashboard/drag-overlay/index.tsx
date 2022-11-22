@@ -18,7 +18,7 @@ const snapToGrid = (args: any) => {
   }
 }
 
-interface DraggableProps {
+interface DragOverlayProps {
   tables: Table[]
   workHours: {
     since: Date
@@ -43,7 +43,7 @@ const getData = (tables: Table[]): [tableCoordiantes: Record<string, number>, re
   return [tableCoordinates, reservations.flat()]
 }
 
-export const Draggable = ({ tables, workHours, controller, handleFormReservation }: DraggableProps) => {
+export const DragOverlay = ({ tables, workHours, controller, handleFormReservation }: DragOverlayProps) => {
   const [tableCoordinates, reservations] = getData(tables)
 
   const mouseSensor = useSensor(MouseSensor, {
