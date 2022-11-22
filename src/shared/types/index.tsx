@@ -24,3 +24,18 @@ export interface Table {
   }
   reservations: Reservation[]
 }
+
+export interface Restaraunt {
+  id: number
+  name: string
+  phone: string
+  email: string
+  url: string
+  adress: string
+  description: string
+  workHours: {
+    since: string
+    till: string
+  }
+  defaultReservationTime: number
+}

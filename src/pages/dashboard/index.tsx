@@ -5,8 +5,9 @@ import { DragOverlay } from './drag-overlay'
 import { FormReservation } from './form-reservation'
 import { Button } from '../../shared/ui/button'
 import { UseTables } from './lib/use-tables'
+import { Menu } from './menu'
+import { FormSettings } from './form-settings'
 
-const WORK_HOURS = { since: '11:00', till: '2:00' }
 const day = setMinutes(setSeconds(new Date(), 0), 0)
 
 const TABLES = [
@@ -117,34 +118,62 @@ const TABLES = [
   },
 ]
 
+const RESTARAUNT = {
+  id: 1,
+  name: 'Название ресторана',
+  phone: '89993583249',
+  email: 'restaraunt@ya.ru',
+  url: 'website.com',
+  adress: 'ул. Пушкина, д. 1',
+  description: 'описание',
+  workHours: { since: '11:00', till: '02:00' },
+  defaultReservationTime: 2,
+}
+
 export const DashboardPage = () => {
-  const [tables, hours, workHours, controller] = UseTables(WORK_HOURS, TABLES)
-  const [modalItem, setModalItem] = useState(null)
+  const [restaraunt, setRestaraunt] = useState(RESTARAUNT)
+  const [tables, hours, workHours, controller] = UseTables(restaraunt.workHours, TABLES)
+  const [formReservationItem, setFormReservationItem] = useState(null)
   const [showFormReservation, setShowFormReservation] = useState(false)
+  const [showSettings, setShowSettings] = useState(false)
 
   const handleFormReservation = (item?: any) => {
-    setModalItem(item ?? null)
+    setFormReservationItem(item ?? null)
     setShowFormReservation((show) => !show)
+  }
+  const handleRestarauntUpdate = (data: any) => {
+    setRestaraunt((restaraunt) => ({ ...restaraunt, ...data }))
   }
 
   return (
     <div className="relative inline-flex flex-col">
       <div className="h-56 sticky top-0 z-30 bg-gray-500">
-        <div className="flex sticky left-0 top-0 z-30 bg-white w-screen">
-          <div className="w-full h-56 px-4">{/* asd */}</div>
+        <div className="sticky left-0 top-0 z-30 bg-white w-screen">
+          <div className="flex flex-col justify-between w-full h-56 px-4">
+            <Menu setShowSettings={setShowSettings} />
+            <div className="w-full flex justify-between pb-4 items-center">
+              <p className="text-2xl font-medium">{restaraunt.name}</p>
+              <Button onClick={() => handleFormReservation()}>Новое бронирование</Button>
+            </div>
+          </div>
           {showFormReservation && (
             <FormReservation
               tables={tables}
               workHours={workHours}
-              item={modalItem}
+              item={formReservationItem}
               isOpen={showFormReservation}
               handleFormReservation={handleFormReservation}
               controller={controller}
             />
           )}
-          <div className="mt-auto px-4 py-3 text-right sm:px-6">
-            <Button onClick={() => handleFormReservation()}>Новое бронирование</Button>
-          </div>
+          {showSettings && (
+            <FormSettings
+              restaraunt={restaraunt}
+              isOpen={showSettings}
+              onClose={() => setShowSettings(false)}
+              handleRestarauntUpdate={handleRestarauntUpdate}
+            />
+          )}
         </div>
       </div>
       <div
