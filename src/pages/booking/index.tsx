@@ -4,6 +4,7 @@ import { Step2 } from './step-2'
 
 export const BookingForm = () => {
   const [selectStep, setSelectStep] = useState(1)
+
   const [selectTime, setSelectTime] = useState('')
   const [selectGuests, setSelectGuests] = useState('')
   const [activeTime, setActiveTime] = useState('')
