@@ -2,14 +2,10 @@ import { useEffect } from 'react'
 import { FormChoiceTime } from './form-choice-time'
 
 export const Step1 = ({
-  selectStep,
+  selectInformation,
+  setSelectInformation,
+
   setSelectStep,
-  selectGuests,
-  setSelectGuests,
-  selectTime,
-  setSelectTime,
-  activeTime,
-  setActiveTime,
   renderTime,
   setRenderTime,
 }: any) => {
@@ -56,7 +52,8 @@ export const Step1 = ({
   const BookedTime = ['19:30', '20:00', '20:30', '21:00']
 
   const arrGuests = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-  const showFormChoiceTime = selectGuests && selectTime
+
+  const showFormChoiceTime = selectInformation.selectGuests && selectInformation.selectTime
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
       <div className="space-y-5 px-10 py-3 max-w-[100%] w-[448px] bg-white-400 shadow-xl rounded-xl">
@@ -79,8 +76,8 @@ export const Step1 = ({
             <label className="text-sm text-gray-700 font-medium leading-5 mr-auto mb-[5px]">Гостей</label>
             <select
               className="h-[42px] w-[90px] rounded-lg shadow-xl text-gray-700 border border-gray-400 text-center"
-              value={selectGuests}
-              onChange={(e) => setSelectGuests(e.target.value)}
+              value={selectInformation.selectGuests}
+              onChange={(e) => setSelectInformation({ ...selectInformation, selectGuests: e.target.value })}
             >
               <option disabled value="">
                 {''}
@@ -98,8 +95,8 @@ export const Step1 = ({
             <label className="text-sm text-gray-700 font-medium leading-5 mr-auto mb-[5px]">Время</label>
             <select
               className="h-[42px] w-[100px] rounded-lg shadow-xl text-gray-700 border border-gray-400 text-center"
-              value={selectTime}
-              onChange={(e) => setSelectTime(e.target.value)}
+              value={selectInformation.selectTime}
+              onChange={(e) => setSelectInformation({ ...selectInformation, selectTime: e.target.value })}
             >
               <option disabled value="">
                 {''}
@@ -113,14 +110,12 @@ export const Step1 = ({
         {showFormChoiceTime && (
           <FormChoiceTime
             arr={arr}
-            selectTime={selectTime}
             BookedTime={BookedTime}
-            selectStep={selectStep}
             setSelectStep={setSelectStep}
-            activeTime={activeTime}
-            setActiveTime={setActiveTime}
             renderTime={renderTime}
             setRenderTime={setRenderTime}
+            selectInformation={selectInformation}
+            setSelectInformation={setSelectInformation}
           />
         )}
       </div>

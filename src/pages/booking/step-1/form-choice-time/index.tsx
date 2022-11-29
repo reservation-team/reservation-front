@@ -15,25 +15,24 @@ function сreatingArray(arr: any[], renderTime: any) {
 }
 
 export const FormChoiceTime = ({
+  selectInformation,
+  setSelectInformation,
   arr,
-  selectTime,
   BookedTime,
   setSelectStep,
-  activeTime,
-  setActiveTime,
   renderTime,
   setRenderTime,
 }: any) => {
   useEffect(() => {
-    setRenderTime(arr.indexOf(selectTime))
-  }, [selectTime])
+    setRenderTime(arr.indexOf(selectInformation.selectTime))
+  }, [selectInformation.selectTime])
 
   console.log(renderTime)
 
   const times = сreatingArray(arr, renderTime)
 
   const handleTime = (element: any) => {
-    setActiveTime(element)
+    setSelectInformation({ ...selectInformation, activeTime: element })
     setSelectStep(2)
   }
 
@@ -45,8 +44,8 @@ export const FormChoiceTime = ({
           key={index}
           className={`w-[72px] h-[38px] flex flex-row justify-center items-center mb-[17px] rounded-lg shadow-xl text-gray-700 
                           ${
-                            element === activeTime
-                              ? 'bg-red-500'
+                            element === setSelectInformation.activeTime
+                              ? ''
                               : BookedTime.includes(element)
                               ? 'text-gray-300 border border-gray-200'
                               : 'border border-gray-400'

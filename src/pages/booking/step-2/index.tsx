@@ -3,25 +3,10 @@ import { Button } from '../../../shared/ui/button'
 import { InputText } from '../../../shared/ui/input-text'
 import { TextArea } from '../../../shared/ui/textarea'
 
-export const Step2 = ({ selectStep, setSelectStep }: any) => {
-  const { register, handleSubmit } = useForm()
+export const Step2 = ({ setSelectStep, register, handleSubmit, reservationData, selectInformation }: any) => {
   const onSubmitRegistration = (data: any) => {
     console.log(data)
   }
-
-  const reservationData = {
-    id: 1,
-    name: 'Матрёшка',
-    phone: '8 (495) 025-25-65',
-    email: '',
-    url: '',
-    adress: 'ул. Пушкина, д.25',
-    description: '',
-    workingHours: { since: '10:00', till: '22:00' },
-    defaultReservationData: '',
-  }
-
-  const time = '10:00'
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
@@ -54,7 +39,7 @@ export const Step2 = ({ selectStep, setSelectStep }: any) => {
             </svg>
 
             <label className="text-base mr-auto ml-auto mb-1 text-gray-700 font-medium leading-5">
-              : Среда, 5 октбря, время: 12:30, гостей: 2
+              : Среда, 5 октбря, время: {selectInformation.activeTime}, гостей: {selectInformation.selectGuests}
             </label>
           </div>
         </div>
@@ -69,10 +54,22 @@ export const Step2 = ({ selectStep, setSelectStep }: any) => {
         <TextArea label="Комментарий" {...register('textContent')} placeholder="Комментарий"></TextArea>
 
         <div className="flex flex-wrap justify-between mt-3 mb-[20px]">
-          <Button type="submit" onClick={() => setSelectStep(1)}>
+          <Button
+            type="submit"
+            onClick={() => {
+              setSelectStep(1)
+            }}
+          >
             Назад
           </Button>
-          <Button type="submit">Войти</Button>
+          <Button
+            type="submit"
+            onClick={() => {
+              setSelectStep(3)
+            }}
+          >
+            Вперед
+          </Button>
         </div>
       </form>
     </div>
