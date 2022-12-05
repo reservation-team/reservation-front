@@ -1,4 +1,5 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { BookingForm } from './pages/booking'
 import { DashboardPage } from './pages/dashboard'
 import { ErrorPage } from './pages/error'
 import { LoginPage } from './pages/login'
@@ -18,8 +19,11 @@ const router = createBrowserRouter([
     path: '/registration',
     element: <RegistrationPage />,
   },
+  {
+    path: '/booking',
+    element: <BookingForm />,
+  },
 ])
-
 export const App = () => {
   return (
     <div className="App w-full min-h-screen bg-gray-50 overflow-auto">
