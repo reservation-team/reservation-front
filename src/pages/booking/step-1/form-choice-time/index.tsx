@@ -1,16 +1,20 @@
 import { useEffect } from 'react'
 
 function сreatingArray(arr: any[], renderTime: any) {
+  console.log('осн', renderTime)
   const array = []
   if (renderTime < 3) renderTime = 3
-  else if (renderTime > arr.length - 4) renderTime = arr.length - 5
+  else if (renderTime >= arr.length - 4) renderTime = arr.length - 5
 
   for (let i = renderTime - 3; i < renderTime + 1; i++) {
     array.push(arr[i])
   }
+  console.log('1-arr', array)
   for (let i = renderTime + 1; i < renderTime + 5; i++) {
     array.push(arr[i])
   }
+  console.log('1+2-arr', array)
+
   return array
 }
 
@@ -26,8 +30,6 @@ export const FormChoiceTime = ({
   useEffect(() => {
     setRenderTime(arr.indexOf(selectInformation.selectTime))
   }, [selectInformation.selectTime])
-
-  console.log(renderTime)
 
   const times = сreatingArray(arr, renderTime)
 
@@ -74,7 +76,7 @@ export const FormChoiceTime = ({
         <label className="text-sm text-gray-700 font-medium leading-5">Посмотреть другое время</label>
         <button
           className="flex flex-row justify-center items-center"
-          onClick={() => (renderTime > arr.length - 4 ? (renderTime = arr.length - 4) : setRenderTime(renderTime + 4))}
+          onClick={() => (renderTime >= arr.length - 4 ? (renderTime = arr.length - 4) : setRenderTime(renderTime + 4))}
           disabled={renderTime > arr.length - 4}
         >
           <svg
