@@ -1,10 +1,10 @@
 import { useForm } from 'react-hook-form'
 import { Dialog, Transition } from '@headlessui/react'
 import { Fragment, useMemo } from 'react'
-import { InputText } from '../../../../shared/ui/input-text'
-import { Button } from '../../../../shared/ui/button'
-import { Select } from '../../../../shared/ui/select'
-import { Controller, Table } from '../../../../shared/types'
+import { InputText } from '../../../../../../shared/ui/input-text'
+import { Button } from '../../../../../../shared/ui/button'
+import { Select } from '../../../../../../shared/ui/select'
+import { Controller, Table } from '../../../../../../shared/types'
 
 interface FormTableProps {
   item?: Table | null
@@ -31,7 +31,7 @@ export const FormTable = ({ item, isOpen, controller, handleFormTable }: FormTab
       () => ({
         id: item?.id ?? Math.floor(Math.random() * 100),
         name: item?.name ?? '',
-        seats: item?.seats ?? { min: 1, max: 1 },
+        seats: item?.seats ?? 1,
         reservations: item?.reservations ?? [],
       }),
       [item]
@@ -103,15 +103,8 @@ export const FormTable = ({ item, isOpen, controller, handleFormTable }: FormTab
                   <form onSubmit={handleSubmit(onSubmit)} className="space-y-1 mt-2">
                     <InputText label="Название" {...register('name', { required: true })} />
                     <div>
-                      <p className="block text-sm font-medium text-gray-700">Время</p>
-                      <div className="flex space-x-4">
-                        <div className="w-2/4">
-                          <Select options={options} {...register('seats.min', { required: true })} />
-                        </div>
-                        <div className="w-2/4">
-                          <Select className="w-2/4" options={options} {...register('seats.max', { required: true })} />
-                        </div>
-                      </div>
+                      <p className="block text-sm font-medium text-gray-700">Количество мест</p>
+                      <Select options={options} {...register('seats', { required: true })} />
                     </div>
                     <div className="flex justify-between !mt-4">
                       <Button>{item ? 'Сохранить' : 'Добавить'}</Button>

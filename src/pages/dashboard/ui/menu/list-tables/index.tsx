@@ -1,7 +1,7 @@
 import { Dialog, Transition } from '@headlessui/react'
 import { Fragment, useState } from 'react'
-import { Controller, Table } from '../../../shared/types'
-import { Button } from '../../../shared/ui/button'
+import { Controller, Table } from '../../../../../shared/types'
+import { Button } from '../../../../../shared/ui/button'
 import { FormTable } from './form-table'
 
 interface ListTablesProps {
@@ -12,6 +12,8 @@ interface ListTablesProps {
 }
 
 export const ListTables = ({ tables, isOpen, onClose, controller }: ListTablesProps) => {
+  if (!isOpen) return null
+
   const [formTableItem, setFormTableItem] = useState(null)
   const [showFormTable, setShowFormTable] = useState(false)
 
@@ -85,9 +87,7 @@ export const ListTables = ({ tables, isOpen, onClose, controller }: ListTablesPr
                         {tables.map((table: any) => (
                           <tr key={table.id} className="bg-white border-b">
                             <th className="py-4 px-6 font-normal">{table.name}</th>
-                            <td className="py-4 px-6">
-                              {table.seats.min} - {table.seats.max}
-                            </td>
+                            <td className="py-4 px-6">{table.seats}</td>
                             <td className="py-4 px-6">
                               <p
                                 onClick={() => handleFormTable(table)}

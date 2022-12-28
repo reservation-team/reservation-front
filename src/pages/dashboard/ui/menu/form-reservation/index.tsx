@@ -2,11 +2,11 @@ import { useForm } from 'react-hook-form'
 import { Dialog, Transition } from '@headlessui/react'
 import { Fragment, useMemo } from 'react'
 import { eachMinuteOfInterval, format, setHours, setMinutes, setSeconds } from 'date-fns'
-import { InputText } from '../../../shared/ui/input-text'
-import { TextArea } from '../../../shared/ui/textarea'
-import { Button } from '../../../shared/ui/button'
-import { Select } from '../../../shared/ui/select'
-import { Controller, Reservation, Table } from '../../../shared/types'
+import { InputText } from '../../../../../shared/ui/input-text'
+import { TextArea } from '../../../../../shared/ui/textarea'
+import { Button } from '../../../../../shared/ui/button'
+import { Select } from '../../../../../shared/ui/select'
+import { Controller, Reservation, Table } from '../../../../../shared/types'
 
 const day = setMinutes(setSeconds(new Date(), 0), 0)
 
@@ -30,6 +30,8 @@ export const FormReservation = ({
   handleFormReservation,
   controller,
 }: FormReservationProps) => {
+  if (!isOpen) return null
+
   const hours = useMemo(
     () =>
       eachMinuteOfInterval(

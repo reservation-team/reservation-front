@@ -1,29 +1,8 @@
-import { addDays, eachHourOfInterval, setHours } from 'date-fns'
-import { setMinutes, setSeconds } from 'date-fns/esm'
 import { useState } from 'react'
 import { Reservation, Table } from '../../../shared/types'
 
-const day = setMinutes(setSeconds(new Date(), 0), 0)
-const getWorkHours = (workHours: { since: string; till: string }) => {
-  const sinceHour = Number(workHours.since.split(':')[0])
-  const tillHour = Number(workHours.till.split(':')[0])
-
-  const since = setHours(day, sinceHour)
-  if (sinceHour > tillHour) {
-    const till = setHours(addDays(day, 1), tillHour)
-    return { since, till }
-  }
-  const till = setHours(day, tillHour)
-  return { since, till }
-}
-
-export const UseTables = (workHoursRaw: { since: string; till: string }, tablesRaw: Table[]) => {
+export const UseTables = (tablesRaw: Table[]) => {
   const [tables, setTables] = useState(tablesRaw)
-  const workHours = getWorkHours(workHoursRaw)
-  const hours = eachHourOfInterval({
-    start: workHours.since,
-    end: workHours.till,
-  }).slice(0, -1)
 
   const addReservation = (tableId: any, reservation: Reservation) => {
     setTables((tables: any) =>
@@ -95,5 +74,5 @@ export const UseTables = (workHoursRaw: { since: string; till: string }, tablesR
     addTable,
   }
 
-  return [tables, hours, workHours, controller] as const
+  return [tables, controller] as const
 }

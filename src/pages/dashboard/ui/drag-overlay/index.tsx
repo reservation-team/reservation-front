@@ -2,7 +2,7 @@ import { DndContext, useSensor, MouseSensor, TouchSensor, KeyboardSensor, useSen
 import { restrictToParentElement } from '@dnd-kit/modifiers'
 import { addMinutes, differenceInMinutes, isBefore, roundToNearestMinutes, subMinutes } from 'date-fns'
 import { Item } from './item'
-import { Controller, Reservation, Table } from '../../../shared/types'
+import { Controller, Reservation, Table } from '../../../../shared/types'
 export enum Axis {
   All,
   Vertical,
@@ -119,10 +119,17 @@ export const DragOverlay = ({ tables, workHours, controller, handleFormReservati
     })
   }
   return (
-    <DndContext sensors={sensors} onDragEnd={handleDragEnd} modifiers={[restrictToParentElement, snapToGrid]}>
-      {preparedItems.map((item) => (
-        <Item key={item.id} item={item} handleLength={handleLength} onClick={() => handleFormReservation(item)} />
-      ))}
-    </DndContext>
+    <div
+      className="absolute top-[19rem] left-28 pointer-events-none inline-flex"
+      style={{ width: 'calc(100% - 8rem)', height: `${tables.length * 5}rem` }}
+    >
+      <div className="relative w-full h-full left-0 top-0 border-r border-b">
+        <DndContext sensors={sensors} onDragEnd={handleDragEnd} modifiers={[restrictToParentElement, snapToGrid]}>
+          {preparedItems.map((item) => (
+            <Item key={item.id} item={item} handleLength={handleLength} onClick={() => handleFormReservation(item)} />
+          ))}
+        </DndContext>
+      </div>
+    </div>
   )
 }

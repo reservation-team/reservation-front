@@ -1,11 +1,11 @@
 import { useForm } from 'react-hook-form'
 import { Dialog, Transition } from '@headlessui/react'
 import { Fragment, useMemo } from 'react'
-import { InputText } from '../../../shared/ui/input-text'
-import { TextArea } from '../../../shared/ui/textarea'
-import { Button } from '../../../shared/ui/button'
-import { Select } from '../../../shared/ui/select'
-import { Restaraunt } from '../../../shared/types'
+import { InputText } from '../../../../../shared/ui/input-text'
+import { TextArea } from '../../../../../shared/ui/textarea'
+import { Button } from '../../../../../shared/ui/button'
+import { Select } from '../../../../../shared/ui/select'
+import { Restaraunt } from '../../../../../shared/types'
 
 interface FormSettingsProps {
   restaraunt: Restaraunt
@@ -14,13 +14,6 @@ interface FormSettingsProps {
 
   handleRestarauntUpdate: any
 }
-
-const defaultReservationTimeOptions = [
-  { value: 1, label: '1' },
-  { value: 2, label: '2' },
-  { value: 3, label: '3' },
-  { value: 4, label: '4' },
-]
 
 const timeOptions = [
   { value: '', label: '' },
@@ -51,6 +44,7 @@ const timeOptions = [
 ]
 
 export const FormSettings = ({ restaraunt, isOpen, onClose, handleRestarauntUpdate }: FormSettingsProps) => {
+  if (!isOpen) return null
   const { register, handleSubmit } = useForm({
     defaultValues: useMemo(
       () => ({
@@ -59,9 +53,10 @@ export const FormSettings = ({ restaraunt, isOpen, onClose, handleRestarauntUpda
         phone: restaraunt.phone,
         email: restaraunt.email,
         url: restaraunt.url,
-        adress: restaraunt.adress,
+        address: restaraunt.address,
         description: restaraunt.description,
-        workHours: restaraunt.workHours,
+        workingHoursFrom: restaraunt.workingHoursFrom.slice(0, 5),
+        workingHoursUntil: restaraunt.workingHoursUntil.slice(0, 5),
         defaultReservationTime: restaraunt.defaultReservationTime,
       }),
       [restaraunt]
@@ -118,13 +113,13 @@ export const FormSettings = ({ restaraunt, isOpen, onClose, handleRestarauntUpda
                       <p className="block text-sm font-medium text-gray-700">Время работы</p>
                       <div className="flex space-x-4">
                         <div className="w-2/4">
-                          <Select options={timeOptions} {...register('workHours.since', { required: true })} />
+                          <Select options={timeOptions} {...register('workingHoursFrom', { required: true })} />
                         </div>
                         <div className="w-2/4">
                           <Select
                             className="w-2/4"
                             options={timeOptions}
-                            {...register('workHours.till', { required: true })}
+                            {...register('workingHoursUntil', { required: true })}
                           />
                         </div>
                       </div>
@@ -133,12 +128,8 @@ export const FormSettings = ({ restaraunt, isOpen, onClose, handleRestarauntUpda
                     <InputText label="Почта" type="email" {...register('email')} />
                     <InputText label="Телефон" type="tel" {...register('phone')} />
                     <InputText label="Сайт" {...register('url')} />
-                    <InputText label="Адрес" {...register('adress')} />
-                    <Select
-                      options={defaultReservationTimeOptions}
-                      label="defaultReservationTime"
-                      {...register('defaultReservationTime')}
-                    />
+                    <InputText label="Адрес" {...register('address')} />
+
                     <TextArea label="Описание" {...register('description')} />
                     <div className="flex justify-between !mt-4">
                       <Button>Сохранить</Button>

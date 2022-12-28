@@ -18,10 +18,7 @@ export interface Reservation {
 export interface Table {
   id: number
   name: string
-  seats: {
-    min: number
-    max: number
-  }
+  seats: number
   reservations: Reservation[]
 }
 
@@ -31,13 +28,11 @@ export interface Restaraunt {
   phone: string
   email: string
   url: string
-  adress: string
+  address: string
   description: string
-  workHours: {
-    since: string
-    till: string
-  }
-  defaultReservationTime: number
+  workingHoursFrom: string
+  workingHoursUntil: string
+  defaultReservationTime: string
 }
 
 export interface Controller {
