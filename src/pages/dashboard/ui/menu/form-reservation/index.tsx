@@ -6,9 +6,7 @@ import { InputText } from '../../../../../shared/ui/input-text'
 import { TextArea } from '../../../../../shared/ui/textarea'
 import { Button } from '../../../../../shared/ui/button'
 import { Select } from '../../../../../shared/ui/select'
-import { Controller, Reservation, Table } from '../../../../../shared/types'
-
-const day = setMinutes(setSeconds(new Date(), 0), 0)
+import { Reservation, Table } from '../../../../../shared/types'
 
 interface FormReservationProps {
   tables: Table[]
@@ -19,7 +17,8 @@ interface FormReservationProps {
   item?: Reservation | null
   isOpen: boolean
   handleFormReservation: (item?: any) => void
-  controller: Controller
+  controller: any
+  selectedDate: Date
 }
 
 export const FormReservation = ({
@@ -29,6 +28,7 @@ export const FormReservation = ({
   isOpen,
   handleFormReservation,
   controller,
+  selectedDate,
 }: FormReservationProps) => {
   if (!isOpen) return null
 
@@ -46,7 +46,7 @@ export const FormReservation = ({
   hours.unshift({ value: '', label: '' })
   const getTimeDate = (time: string) => {
     const [hours, minutes] = time.split(':')
-    return setHours(setMinutes(day, Number(minutes)), Number(hours))
+    return setHours(setMinutes(selectedDate, Number(minutes)), Number(hours))
   }
 
   const tableOptions = tables.map(({ id, name }: any) => ({
@@ -58,11 +58,11 @@ export const FormReservation = ({
     defaultValues: useMemo(
       () => ({
         seats: item?.seats ?? 1,
-        tableId: item?.tableId ?? tableOptions[0].value,
-        since: item?.time ? format(item?.time.since, 'HH:mm') : hours[0],
-        till: item?.time ? format(item?.time.till, 'HH:mm') : hours[0],
-        firstName: item?.person?.firstName ?? '',
-        lastName: item?.person?.lastName ?? '',
+        table_ID: item?.table_ID ?? tableOptions[0].value,
+        timeFrom: item?.timeFrom ? format(new Date(item?.timeFrom), 'HH:mm') : hours[0],
+        timeUntil: item?.timeUntil ? format(new Date(item?.timeUntil), 'HH:mm') : hours[0],
+        firstname: item?.person?.firstname ?? '',
+        lastname: item?.person?.lastname ?? '',
         email: item?.person?.email ?? '',
         phone: item?.person?.phone ?? '',
         comment: item?.comment ?? '',
@@ -76,29 +76,30 @@ export const FormReservation = ({
   }
   const onSubmit = (data: any) => {
     const reservation = {
-      id: item?.id ?? Math.floor(Math.random() * 100),
-      tableId: Number(data.tableId),
-      seats: data.seats,
-      time: { since: getTimeDate(data.since), till: getTimeDate(data.till) },
+      id: item?.id ?? null,
+      seats: item?.seats,
+      table_ID: Number(data.table_ID),
+      timeFrom: getTimeDate(data.timeFrom),
+      timeUntil: getTimeDate(data.timeUntil),
       comment: data.comment,
       person: {
-        firstName: data.firstName,
-        lastName: data.lastName,
+        firstname: data.firstname,
+        lastname: data.lastname,
         email: data.email,
         phone: data.phone,
       },
     }
     if (item) {
-      controller.updateReservation(item?.tableId, reservation.tableId, reservation)
+      controller.updateReservationMutation.mutate({ id: item?.id, data: reservation })
       handleClose()
       return
     }
-    controller.addReservation(reservation.tableId, reservation)
+    controller.addReservationMutation.mutate(reservation)
     handleClose()
   }
 
   const handleRemove = () => {
-    controller.removeReservation(item?.tableId, item?.id)
+    controller.removeReservationMutation.mutate(item?.id)
     handleClose()
   }
 
@@ -148,10 +149,10 @@ export const FormReservation = ({
                       <p className="block text-sm font-medium text-gray-700">Время</p>
                       <div className="flex space-x-4">
                         <div className="w-2/4">
-                          <Select options={hours} {...register('since', { required: true })} />
+                          <Select options={hours} {...register('timeFrom', { required: true })} />
                         </div>
                         <div className="w-2/4">
-                          <Select className="w-2/4" options={hours} {...register('till', { required: true })} />
+                          <Select className="w-2/4" options={hours} {...register('timeUntil', { required: true })} />
                         </div>
                       </div>
                     </div>
@@ -166,11 +167,11 @@ export const FormReservation = ({
                         />
                       </div>
                       <div className="w-2/4">
-                        <Select label="Стол" options={tableOptions} {...register('tableId', { required: true })} />
+                        <Select label="Стол" options={tableOptions} {...register('table_ID', { required: true })} />
                       </div>
                     </div>
-                    <InputText label="Имя" {...register('firstName', { required: true })} />
-                    <InputText label="Фамилия" {...register('lastName')} />
+                    <InputText label="Имя" {...register('firstname', { required: true })} />
+                    <InputText label="Фамилия" {...register('lastname')} />
                     <InputText label="Почта" type="email" {...register('email')} />
                     <InputText label="Телефон" type="tel" {...register('phone')} />
                     <TextArea label="Комментарий" {...register('comment')} />

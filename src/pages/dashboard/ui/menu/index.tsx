@@ -1,29 +1,35 @@
 import { Menu as HeadlessMenu, Transition } from '@headlessui/react'
 import { Fragment, useState } from 'react'
+import { Restaraunt, Table } from '../../../../shared/types'
 import { FormReservation } from './form-reservation'
 import { FormSettings } from './form-settings'
 import { ListTables } from './list-tables'
 
 interface MenuProps {
-  workHours: any
-  restaraunt: any
-  handleRestarauntUpdate: any
+  workHours: {
+    since: Date
+    till: Date
+  }
+  restaraunt: Restaraunt
+  updateRestarauntMutation: any
   handleFormReservation: any
   formReservationItem: any
   showFormReservation: any
-  tables: any
+  tables: Table[]
   controller: any
+  selectedDate: Date
 }
 
 export const Menu = ({
   workHours,
   restaraunt,
-  handleRestarauntUpdate,
+  updateRestarauntMutation,
   handleFormReservation,
   showFormReservation,
   formReservationItem,
   tables,
   controller,
+  selectedDate,
 }: MenuProps) => {
   const [showSettings, setShowSettings] = useState(false)
   const [showTablesSettings, setShowTablesSettings] = useState(false)
@@ -82,6 +88,7 @@ export const Menu = ({
         </HeadlessMenu>
       </div>
       <FormReservation
+        selectedDate={selectedDate}
         tables={tables}
         workHours={workHours}
         item={formReservationItem}
@@ -93,7 +100,7 @@ export const Menu = ({
         restaraunt={restaraunt}
         isOpen={showSettings}
         onClose={() => setShowSettings(false)}
-        handleRestarauntUpdate={handleRestarauntUpdate}
+        updateRestarauntMutation={updateRestarauntMutation}
       />
       <ListTables
         tables={tables}

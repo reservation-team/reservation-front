@@ -4,12 +4,12 @@ import { Fragment, useMemo } from 'react'
 import { InputText } from '../../../../../../shared/ui/input-text'
 import { Button } from '../../../../../../shared/ui/button'
 import { Select } from '../../../../../../shared/ui/select'
-import { Controller, Table } from '../../../../../../shared/types'
+import { Table } from '../../../../../../shared/types'
 
 interface FormTableProps {
   item?: Table | null
   isOpen: boolean
-  controller: Controller
+  controller: any
   handleFormTable: any
 }
 
@@ -29,10 +29,11 @@ export const FormTable = ({ item, isOpen, controller, handleFormTable }: FormTab
   const { register, handleSubmit } = useForm({
     defaultValues: useMemo(
       () => ({
-        id: item?.id ?? Math.floor(Math.random() * 100),
+        restaurant_id: 1,
+        id: item?.id ?? null,
         name: item?.name ?? '',
         seats: item?.seats ?? 1,
-        reservations: item?.reservations ?? [],
+        reservations: item?.reservations ?? null,
       }),
       [item]
     ),
@@ -40,22 +41,23 @@ export const FormTable = ({ item, isOpen, controller, handleFormTable }: FormTab
 
   const onSubmit = (data: any) => {
     const table = {
+      restaurant_id: data.restaurant_id,
       id: data.id,
       name: data.name,
       seats: data.seats,
       reservations: data.reservations,
     }
     if (item) {
-      controller.updateTable(table)
+      controller.updateTableMutation.mutate({ id: item.id, data: table })
       handleFormTable()
       return
     }
-    controller.addTable(table)
+    controller.addTableMutation.mutate(table)
     handleFormTable()
   }
 
   const handleRemove = () => {
-    controller.removeTable(item?.id)
+    controller.removeTableMutation.mutate(item?.id)
     handleFormTable()
   }
 

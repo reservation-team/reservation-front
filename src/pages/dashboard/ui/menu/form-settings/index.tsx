@@ -12,7 +12,7 @@ interface FormSettingsProps {
   isOpen: boolean
   onClose: () => void
 
-  handleRestarauntUpdate: any
+  updateRestarauntMutation: any
 }
 
 const timeOptions = [
@@ -43,7 +43,7 @@ const timeOptions = [
   { value: '23:00', label: '23:00' },
 ]
 
-export const FormSettings = ({ restaraunt, isOpen, onClose, handleRestarauntUpdate }: FormSettingsProps) => {
+export const FormSettings = ({ restaraunt, isOpen, onClose, updateRestarauntMutation }: FormSettingsProps) => {
   if (!isOpen) return null
   const { register, handleSubmit } = useForm({
     defaultValues: useMemo(
@@ -64,7 +64,7 @@ export const FormSettings = ({ restaraunt, isOpen, onClose, handleRestarauntUpda
   })
 
   const onSubmit = (data: any) => {
-    handleRestarauntUpdate(data)
+    updateRestarauntMutation.mutate(data)
     onClose()
   }
   return (

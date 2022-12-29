@@ -1,6 +1,6 @@
 import { Dialog, Transition } from '@headlessui/react'
 import { Fragment, useState } from 'react'
-import { Controller, Table } from '../../../../../shared/types'
+import { Table } from '../../../../../shared/types'
 import { Button } from '../../../../../shared/ui/button'
 import { FormTable } from './form-table'
 
@@ -8,7 +8,7 @@ interface ListTablesProps {
   tables: Table[]
   isOpen: boolean
   onClose: () => void
-  controller: Controller
+  controller: any
 }
 
 export const ListTables = ({ tables, isOpen, onClose, controller }: ListTablesProps) => {

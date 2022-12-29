@@ -1,9 +1,16 @@
 import { useDraggable } from '@dnd-kit/core'
-import { format } from 'date-fns'
+import { format, parseISO } from 'date-fns'
+import { Reservation } from '../../../../../shared/types'
 import { ButtonReisze } from './button-resize'
 
+interface Item extends Reservation {
+  x: number
+  y: number
+  length: number
+}
+
 interface DraggableItemProps {
-  item: any
+  item: Item
   handleLength: any
   onClick: () => void
 }
@@ -30,9 +37,9 @@ export function Item({ item, handleLength, onClick }: DraggableItemProps) {
       <div className="h-16 bg-white flex justify-between rounded-md border w-full">
         <ButtonReisze direction="left" id={item.id} handleLength={handleLength} item={item} />
         <div className="self-center flex flex-col">
-          <p className="text-sm font-semibold">{item.person.firstName}</p>
+          <p className="text-sm font-semibold">{item.person.firstname}</p>
           <p className="text-sm">
-            {format(item.time.since, 'HH:mm')}-{format(item.time.till, 'HH:mm')}
+            {format(parseISO(item.timeFrom), 'HH:mm')}-{format(parseISO(item.timeUntil), 'HH:mm')}
           </p>
         </div>
         <ButtonReisze direction="right" id={item.id} handleLength={handleLength} item={item} />

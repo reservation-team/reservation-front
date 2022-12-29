@@ -1,8 +1,8 @@
 import { DndContext, useSensor, MouseSensor, TouchSensor, KeyboardSensor, useSensors } from '@dnd-kit/core'
 import { restrictToParentElement } from '@dnd-kit/modifiers'
-import { addMinutes, differenceInMinutes, isBefore, roundToNearestMinutes, subMinutes } from 'date-fns'
+import { addMinutes, differenceInMinutes, isBefore, parseISO, roundToNearestMinutes, subMinutes } from 'date-fns'
 import { Item } from './item'
-import { Controller, Reservation, Table } from '../../../../shared/types'
+import { Reservation, Table } from '../../../../shared/types'
 export enum Axis {
   All,
   Vertical,
@@ -24,7 +24,7 @@ interface DragOverlayProps {
     since: Date
     till: Date
   }
-  controller: Controller
+  controller: any
   handleFormReservation: (item?: any) => void
 }
 
@@ -40,7 +40,6 @@ const getData = (tables: Table[]): [tableCoordiantes: Record<string, number>, re
 
 export const DragOverlay = ({ tables, workHours, controller, handleFormReservation }: DragOverlayProps) => {
   const [tableCoordinates, reservations] = getData(tables)
-
   const mouseSensor = useSensor(MouseSensor, {
     activationConstraint: {
       distance: 40,
@@ -54,12 +53,12 @@ export const DragOverlay = ({ tables, workHours, controller, handleFormReservati
   const keyboardSensor = useSensor(KeyboardSensor, {})
   const sensors = useSensors(mouseSensor, touchSensor, keyboardSensor)
 
-  const getLength = (item: any) => differenceInMinutes(item.time.till, item.time.since) / 60
+  const getLength = (item: Reservation) => differenceInMinutes(parseISO(item.timeUntil), parseISO(item.timeFrom)) / 60
 
-  const getCoordinates = (item: any) => {
+  const getCoordinates = (item: Reservation) => {
     return {
-      y: tableCoordinates[item.tableId],
-      x: (differenceInMinutes(item.time.since, workHours.since) / 60) * 176,
+      y: tableCoordinates[item.table_ID],
+      x: (differenceInMinutes(parseISO(item.timeFrom), workHours.since) / 60) * 176,
     }
   }
   const preparedItems = reservations.map((item) => ({ ...item, ...getCoordinates(item), length: getLength(item) }))
@@ -67,34 +66,32 @@ export const DragOverlay = ({ tables, workHours, controller, handleFormReservati
   const handleLength = (item: any, dx: number, direction: 'left' | 'right') => {
     const newReservation = {
       ...item,
-      time: {
-        since:
-          direction === 'left' &&
-          isBefore(
-            subMinutes(workHours.since, 1),
-            roundToNearestMinutes(addMinutes(item.time.since, 15 * (dx / 44)), { nearestTo: 15 })
-          ) &&
-          differenceInMinutes(
-            item.time.till,
-            roundToNearestMinutes(addMinutes(item.time.since, 15 * (dx / 44)), { nearestTo: 15 })
-          ) > 60
-            ? roundToNearestMinutes(addMinutes(item.time.since, 15 * (dx / 44)), { nearestTo: 15 })
-            : item.time.since,
-        till:
-          direction === 'right' &&
-          isBefore(
-            roundToNearestMinutes(addMinutes(item.time.till, 15 * (dx / 44)), { nearestTo: 15 }),
-            workHours.till
-          ) &&
-          differenceInMinutes(
-            roundToNearestMinutes(addMinutes(item.time.till, 15 * (dx / 44)), { nearestTo: 15 }),
-            item.time.since
-          ) > 60
-            ? roundToNearestMinutes(addMinutes(item.time.till, 15 * (dx / 44)), { nearestTo: 15 })
-            : item.time.till,
-      },
+      timeFrom:
+        direction === 'left' &&
+        isBefore(
+          subMinutes(workHours.since, 1),
+          roundToNearestMinutes(addMinutes(parseISO(item.timeFrom), 15 * (dx / 44)), { nearestTo: 15 })
+        ) &&
+        differenceInMinutes(
+          parseISO(item.timeUntil),
+          roundToNearestMinutes(addMinutes(parseISO(item.timeFrom), 15 * (dx / 44)), { nearestTo: 15 })
+        ) > 60
+          ? roundToNearestMinutes(addMinutes(parseISO(item.timeFrom), 15 * (dx / 44)), { nearestTo: 15 })
+          : parseISO(item.timeFrom),
+      timeUntil:
+        direction === 'right' &&
+        isBefore(
+          roundToNearestMinutes(addMinutes(parseISO(item.timeUntil), 15 * (dx / 44)), { nearestTo: 15 }),
+          workHours.till
+        ) &&
+        differenceInMinutes(
+          roundToNearestMinutes(addMinutes(parseISO(item.timeUntil), 15 * (dx / 44)), { nearestTo: 15 }),
+          parseISO(item.timeFrom)
+        ) > 60
+          ? roundToNearestMinutes(addMinutes(parseISO(item.timeUntil), 15 * (dx / 44)), { nearestTo: 15 })
+          : parseISO(item.timeUntil),
     }
-    controller.updateReservationData(newReservation)
+    controller.updateReservationMutation.mutate({ id: item.id, data: newReservation })
   }
 
   const handleDragEnd = (event: any) => {
@@ -102,17 +99,18 @@ export const DragOverlay = ({ tables, workHours, controller, handleFormReservati
     const reseravtion = event.active.data.current
     const newTableId = Number(
       Object.keys(tableCoordinates).find(
-        (key) => tableCoordinates[key] === tableCoordinates[reseravtion.tableId] + event.delta.y
+        (key) => tableCoordinates[key] === tableCoordinates[reseravtion.table_ID] + event.delta.y
       )
     )
-    controller.updateReservation(reseravtion.tableId, newTableId, {
-      ...reseravtion,
-      tableId: newTableId,
-      time: {
-        since: roundToNearestMinutes(addMinutes(reseravtion.time.since, 15 * (event.delta.x / 44)), {
+    controller.updateReservationMutation.mutate({
+      id: reseravtion.id,
+      data: {
+        ...reseravtion,
+        table_ID: newTableId,
+        timeFrom: roundToNearestMinutes(addMinutes(parseISO(reseravtion.timeFrom), 15 * (event.delta.x / 44)), {
           nearestTo: 15,
         }),
-        till: roundToNearestMinutes(addMinutes(reseravtion.time.till, 15 * (event.delta.x / 44)), {
+        timeUntil: roundToNearestMinutes(addMinutes(parseISO(reseravtion.timeUntil), 15 * (event.delta.x / 44)), {
           nearestTo: 15,
         }),
       },
